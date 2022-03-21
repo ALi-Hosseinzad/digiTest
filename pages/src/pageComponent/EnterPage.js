@@ -1,10 +1,69 @@
 import React, { useEffect, useState } from "react";
-import { FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
+import {
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  Switch,
+  Typography,
+} from "@mui/material";
 import cookie from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { user } from "../../redux/reducer/User/userReducer";
 import { useSnackbar } from "notistack";
+import { withStyles } from "@mui/styles";
 
+const IOSSwitch = withStyles((theme) => ({
+  root: {
+    width: 180,
+    height: 52,
+    padding: 0,
+    margin: theme.spacing(1),
+  },
+  switchBase: {
+    padding: 1,
+    "&$checked": {
+      transform: "translateX(130px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        backgroundColor: "#52d869",
+        opacity: 1,
+        border: "none",
+      },
+    },
+    "&$focusVisible $thumb": {
+      color: "#52d869",
+      border: "6px solid #fff",
+    },
+  },
+  thumb: {
+    width: 47,
+    height: 50,
+  },
+  track: {
+    borderRadius: 48 / 2,
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[50],
+    opacity: 1,
+    transition: theme.transitions.create(["background-color", "border"]),
+  },
+  checked: {},
+  focusVisible: {},
+}))(({ classes, ...props }) => {
+  return (
+    <Switch
+      focusVisibleClassName={classes.focusVisible}
+      disableRipple
+      classes={{
+        root: classes.root,
+        switchBase: classes.switchBase,
+        thumb: classes.thumb,
+        track: classes.track,
+        checked: classes.checked,
+      }}
+      {...props}
+    />
+  );
+});
 export default function EnterPage() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -55,7 +114,7 @@ export default function EnterPage() {
             ...User.userEnterTimes,
             {
               ...User.userEnterTimes[User.enterTimes?.length - 1],
-              id: User.enterTimes?.length - 1,
+              id: Number(User.enterTimes?.length) - 1,
               exitTime: new Date(),
             },
           ],
@@ -63,24 +122,29 @@ export default function EnterPage() {
       );
     }
   };
-
+  console.log(User);
   return (
-    <Grid container>
+    <Grid
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+    >
       <Grid item>
+        <Typography>Please set your inter or exit:</Typography>
         <FormGroup>
           <FormControlLabel
             control={
-              <Switch
+              <IOSSwitch
                 checked={User?.checked}
                 onChange={handleChange}
                 inputProps={{ "aria-label": "controlled" }}
               />
             }
-            label={User.time ? "Enter" : "Exit"}
+            label={User.enterTime ? "Exit" : "Enter"}
           />
         </FormGroup>
       </Grid>
     </Grid>
   );
 }
-s;

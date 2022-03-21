@@ -2,9 +2,8 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import PageLayout from "./src/pageComponent/pageLayout";
 
-const Landing = dynamic(() => import("./src/pageComponent/Landing"), {
-  ssr: false,
-});
+const Landing = dynamic(() => import("./src/pageComponent/Landing"));
+
 export default function Home() {
   return (
     <PageLayout>

@@ -25,10 +25,9 @@ export default function Landing() {
   }, []);
 
   return (
-    <Grid container>
+    <Container maxWidth="lg" style={{ minHeight: "calc(100vh - 2rem)" }}>
       {User?.isOpen && <AlertDialogSlide open={User?.isOpen} />}
-      <div>aliiiiiiii</div>
       <EnterPage />
-    </Grid>
+    </Container>
   );
 }
