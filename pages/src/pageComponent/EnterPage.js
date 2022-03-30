@@ -1,72 +1,20 @@
-import React, { useEffect, useState } from "react";
-import {
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Switch,
-  Typography,
-} from "@mui/material";
+import React, { useEffect } from "react";
+import { Button, Grid, Typography } from "@mui/material";
 import cookie from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { user } from "../../redux/reducer/User/userReducer";
 import { useSnackbar } from "notistack";
-import { withStyles } from "@mui/styles";
+import SwitchComponent from "../components/Switch";
+import ToDo from "./ToDo";
+import Holidays from "date-holidays";
+import Link from "next/link";
 
-const IOSSwitch = withStyles((theme) => ({
-  root: {
-    width: 180,
-    height: 52,
-    padding: 0,
-    margin: theme.spacing(1),
-  },
-  switchBase: {
-    padding: 1,
-    "&$checked": {
-      transform: "translateX(130px)",
-      color: theme.palette.common.white,
-      "& + $track": {
-        backgroundColor: "#52d869",
-        opacity: 1,
-        border: "none",
-      },
-    },
-    "&$focusVisible $thumb": {
-      color: "#52d869",
-      border: "6px solid #fff",
-    },
-  },
-  thumb: {
-    width: 47,
-    height: 50,
-  },
-  track: {
-    borderRadius: 48 / 2,
-    border: `1px solid ${theme.palette.grey[400]}`,
-    backgroundColor: theme.palette.grey[50],
-    opacity: 1,
-    transition: theme.transitions.create(["background-color", "border"]),
-  },
-  checked: {},
-  focusVisible: {},
-}))(({ classes, ...props }) => {
-  return (
-    <Switch
-      focusVisibleClassName={classes.focusVisible}
-      disableRipple
-      classes={{
-        root: classes.root,
-        switchBase: classes.switchBase,
-        thumb: classes.thumb,
-        track: classes.track,
-        checked: classes.checked,
-      }}
-      {...props}
-    />
-  );
-});
 export default function EnterPage() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const hd = new Holidays();
+  const isHoliday = hd.isHoliday(new Date());
+  console.log(isHoliday);
   const User = useSelector((state) => state.user.value);
 
   useEffect(() => {
@@ -85,15 +33,15 @@ export default function EnterPage() {
 
   const handleChange = (event) => {
     const aMinuteLess =
-      User.enterTime && new Date(User.enterTime.getTime() - 1000 * 60);
-    if (!User.enterTime) {
+      User.enterTime && new Date(User.enterTime.getTime() - 10000 * 60);
+    if (!User.enterTime && !isHoliday) {
       dispatch(
         user({
           checked: event.target.checked,
           enterTime: new Date(),
           userEnterTimes: [
             {
-              id: User.enterTimes?.length + 1,
+              id: User.enterTimes?.length||0 + 1,
               enterTime: new Date(),
               exitTime: false,
             },
@@ -101,7 +49,11 @@ export default function EnterPage() {
         })
       );
     } else if (User.enterTime && aMinuteLess) {
-      enqueueSnackbar("You can't exit the company less than 10 min", {
+      enqueueSnackbar("You can't exit the company less than 10 min! :(", {
+        variant: "error",
+      });
+    } else if (User.enterTime && !aMinuteLess && !User.Todo) {
+      enqueueSnackbar("You can't exit the company without add any tasks! :(", {
         variant: "error",
       });
     } else {
@@ -130,21 +82,33 @@ export default function EnterPage() {
       justifyContent="center"
       alignItems="center"
     >
-      <Grid item>
-        <Typography>Please set your inter or exit:</Typography>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <IOSSwitch
-                checked={User?.checked}
-                onChange={handleChange}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            }
-            label={User.enterTime ? "Exit" : "Enter"}
+      <br />
+      {!isHoliday ? (
+        <Grid item style={User.enterTime?{marginTop:"10%"}:{ marginTop: "25%" }}>
+          <Typography>Please set your inter or exit:</Typography>
+          <SwitchComponent
+            checked={User.checked}
+            handleChange={handleChange}
+            enterTime={User.enterTime}
           />
-        </FormGroup>
-      </Grid>
+        </Grid>
+      ) : (
+        <Grid item style={{ marginTop: "25%" }}>
+          <Typography>
+            Today is holiday, You can not enter the office ! :)
+          </Typography>
+        </Grid>
+      )}
+      {User.enterTime && (
+        <Grid item>
+          <ToDo />
+            <Link href='/list'>
+          <Button variant='contained' color='primary'>
+              Go to list page
+          </Button>
+            </Link>
+        </Grid>
+      )}
     </Grid>
   );
-}
+};

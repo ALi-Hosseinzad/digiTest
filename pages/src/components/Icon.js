@@ -40,7 +40,8 @@ const CustomIcon = (props) => {
           <i className={clsx("iconStyle", className)} {...rest} />
         </>
       ) : (
-        <img
+        <Image
+        alt={src}
           src={src}
           width={size}
           height={size}

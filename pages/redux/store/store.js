@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import loginReducer from "../reducer/Login/loginReducer";
 import userReducer from "../reducer/User/userReducer";
+import allUsersReducer from "../reducer/AllUser/allUsersReducer"
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -10,6 +11,7 @@ export const store = configureStore({
   reducer: {
     login: loginReducer,
     user: userReducer,
+    allUsers:allUsersReducer
   },
 });
 
