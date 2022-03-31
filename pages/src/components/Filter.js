@@ -10,16 +10,14 @@ import {
   FormControl,
   Grid,
   TextField,
-  Select,
-  MenuItem,
   Button,
   Radio,
 } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const defaultValues = {
   name: "",
   workType: "",
-  record: 10,
   showDeleteBtn: false,
 };
 const Filter = () => {
@@ -31,19 +29,10 @@ const Filter = () => {
   const [formValues, setFormValues] = useState(defaultValues);
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
-      [name]: value,
-    });
-  };
-
   useEffect(() => {
     if (
       queryParam.name ||
       queryParam.workType ||
-      queryParam.record ||
       queryParam.showDeleteBtn
     ) {
       setFormValues(queryParam);
@@ -52,18 +41,24 @@ const Filter = () => {
     }
   }, [queryParam]);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+
   const handleSubmit = (event) => {
     setIsLoading(true);
     const data = new FormData(event.currentTarget);
     const values = {
       name: data.get("name"),
       workType: data.get("workType"),
-      record: data.get("record"),
     };
     if (values) {
-      router.push({
-        query: { ...formValues, pageNumber: 1 },
-      });
+      router.push({query: { ...formValues, pageNumber: 1 }});
       setFormValues({ showDeleteBtn: true });
       setIsLoading(false);
     } else {
@@ -75,7 +70,7 @@ const Filter = () => {
   };
 
   const resetSearch = () => {
-    history.push({ search: queryString.stringify() });
+    router.push({ query: {} });
     setFormValues(defaultValues);
   };
   return (
@@ -94,10 +89,10 @@ const Filter = () => {
 
         <Grid item xs={6}>
           <FormControl>
-            <FormLabel>Gender</FormLabel>
+            <FormLabel>Work Type</FormLabel>
             <RadioGroup
               name="workType"
-              value={formValues.gender}
+              value={formValues.workingType}
               onChange={handleInputChange}
               row
             >
@@ -123,18 +118,15 @@ const Filter = () => {
         justifyContent="flex-end"
         alignItems="flex-end"
       >
-        
-          <Button variant="contained" color="primary" type="submit">
-            Submit
+        <Button variant="contained" color="primary" type="submit"  loading={isLoading}>
+          Search
+        </Button>
+        {formValues.showDeleteBtn && (
+          <Button variant="contained" color="error" onClick={resetSearch} startIcon={<DeleteIcon />}>
+            Clean
           </Button>
-          {formValues.showDeleteBtn && (
-            <Button variant="contained" color="secondary" onClick={resetSearch}>
-              Clean
-            </Button>
-          )}
-        
+        )}
       </Grid>
-      <
     </form>
   );
 };
